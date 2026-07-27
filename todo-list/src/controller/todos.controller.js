@@ -1,4 +1,4 @@
-const todoService = require("../service/todo.service");
+const todoService = require("../service/todos.service");
 
 const getAll = async (req, res, next) => {
     try {

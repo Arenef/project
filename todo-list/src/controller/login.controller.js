@@ -1,15 +1,17 @@
+const usersService = require("../service/users.service");
+
 // login.controller.js
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    // 1. Kiểm tra username và password trong Database (giả lập)
-    const user = await User.findOne({ username });
-    if (!user || user.password !== password) {
-        return res.status(401).json({ message: 'Sai tài khoản hoặc mật khẩu' });
+    const user = await usersService.authenticateUser(email, password);
+
+    if (!user) {
+        return res.status(401).json({ message: 'Thông tin đăng nhập chưa chính xác' });
     }
 
-    // 2. Xác thực thành công -> Lưu thông tin vào session
-    req.session.userId = user._id;
+    req.session.userId = user.id;
+    req.session.email = user.email;
     req.session.username = user.username;
     req.session.isLoggedIn = true;
 

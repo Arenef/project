@@ -1,7 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 
-const todoRoutes = require('./routes/todo.routes');
+const todoRoutes = require('./routes/todos.routes');
 const authRoutes = require('./routes/auth.routes');
 const errorHandler = require('./middleware/errorHandler');
 
