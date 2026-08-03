@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Todo List</title>
+    <meta name="description" content="A beautiful and dynamic todo list application to manage your tasks.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="app-container">
+        <!-- Auth View -->
+        <section id="auth-view" class="view glass-panel">
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="tab-login">Login</button>
+                <button class="tab-btn" id="tab-register">Register</button>
+            </div>
+            
+            <form id="login-form" class="auth-form active">
+                <h1 class="main-title">Welcome Back</h1>
+                <p class="subtitle">Sign in to manage your tasks</p>
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+                <p id="login-error" class="error-msg"></p>
+            </form>
+
+            <form id="register-form" class="auth-form hidden">
+                <h2 class="main-title">Create Account</h2>
+                <p class="subtitle">Join us and start organizing</p>
+                <div class="input-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" required placeholder="john_doe">
+                </div>
+                <div class="input-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <p id="register-error" class="error-msg"></p>
+            </form>
+        </section>
+
+        <!-- Todo View -->
+        <section id="todo-view" class="view glass-panel hidden">
+            <header class="app-header">
+                <div>
+                    <h2>My Tasks</h2>
+                    <p id="user-greeting" class="subtitle">Hello!</p>
+                </div>
+                <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+            </header>
+
+            <form id="add-todo-form" class="add-todo-form">
+                <input type="text" id="todo-title" placeholder="What needs to be done?" required>
+                <input type="text" id="todo-desc" placeholder="Details (optional)">
+                <input type="date" id="todo-time">
+                <button type="submit" class="btn btn-primary btn-icon" aria-label="Add task">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+            </form>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+
+            <ul id="todo-list" class="todo-list">
+                <!-- Todo items will be injected here -->
+            </ul>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

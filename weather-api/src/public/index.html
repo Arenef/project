@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - Cực Ngầu</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="weather-app">
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Nhập tên thành phố (Hanoi, Tokyo)..." autocomplete="off">
+            <button id="searchBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+        </div>
+        
+        <div id="loading" class="hidden loading-msg">Đang tìm kiếm...</div>
+        <div id="error" class="hidden error-msg"></div>
+        
+        <div class="weather-info hidden" id="weatherInfo">
+            <h2 id="cityName">Thành Phố</h2>
+            <div class="temp">
+                <span id="temperature">--</span>°C
+            </div>
+            <div class="desc" id="description">Mô tả</div>
+            <div class="details">
+                <div class="detail-item">
+                    <span>Độ ẩm</span>
+                    <span id="humidity">--%</span>
+                </div>
+                <div class="detail-item">
+                    <span>Gió</span>
+                    <span id="wind">-- m/s</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 const express = require('express');
+const session = require('express-session');
 const helmet = require('helmet');
+const path = require('path');
 
 const todoRoutes = require('./routes/todos.routes');
 const authRoutes = require('./routes/auth.routes');
@@ -22,6 +24,7 @@ app.use(session({
 
 app.use(express.json());
 app.use(helmet());
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Các route Public (Ai cũng vào được)
 app.use('/auth', authRoutes);
