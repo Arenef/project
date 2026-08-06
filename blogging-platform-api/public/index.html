@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Blog - Modern Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <header class="glass-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fa-solid fa-feather-pointed"></i>
+                <span>Nexus</span>
+            </div>
+            <div class="search-container">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search articles...">
+            </div>
+            <button class="btn primary-btn" id="newPostBtn">
+                <i class="fa-solid fa-plus"></i> New Article
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="hero-section">
+            <h1 class="gradient-text">Discover inspiring stories</h1>
+            <p class="subtitle">A modern platform for thinkers, creators, and visionaries.</p>
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-tag="">All</button>
+            <button class="filter-btn" data-tag="Technology">Technology</button>
+            <button class="filter-btn" data-tag="Design">Design</button>
+            <button class="filter-btn" data-tag="Life">Life</button>
+            <button class="filter-btn" data-tag="Code">Code</button>
+        </div>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="posts-grid" id="postsContainer">
+            <!-- Posts will be injected here via JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal for Create/Edit -->
+    <div class="modal-overlay" id="postModal">
+        <div class="modal glass-panel">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create New Article</h2>
+                <button class="close-btn" id="closeModalBtn"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="postForm">
+                    <input type="hidden" id="postId">
+                    <div class="form-group">
+                        <label for="postTitle">Title</label>
+                        <input type="text" id="postTitle" required placeholder="Enter an engaging title">
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Content</label>
+                        <textarea id="postContent" rows="6" required placeholder="Write your story here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postTags">Tags (comma separated)</label>
+                        <input type="text" id="postTags" placeholder="e.g., Technology, Design">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary-btn" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn primary-btn">Publish Article</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
