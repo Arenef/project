@@ -4,221 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hôm Nay Ăn Gì?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- TOP NAVBAR -->
-        <header class="navbar">
-            <div class="logo">
-                <i class="ph-fill ph-cooking-pot text-primary" style="font-size: 2rem;"></i>
-                <h1>Hôm Nay <span class="text-primary">Ăn Gì?</span></h1>
-            </div>
-            <nav class="nav-links">
-                <a href="#" class="active"><i class="ph ph-house"></i> Trang chủ</a>
-                <a href="#"><i class="ph ph-bookmark-simple"></i> Món của tôi</a>
-                <a href="#"><i class="ph ph-clock-counter-clockwise"></i> Lịch sử</a>
-                <a href="#"><i class="ph ph-gear"></i> Cài đặt</a>
-            </nav>
-            <div class="nav-actions">
-                <button class="icon-btn theme-toggle"><i class="ph ph-moon"></i></button>
-            </div>
+    <div class="container">
+        <header class="fade-in">
+            <h1>Hôm Nay Ăn Gì? 🤔</h1>
+            <p>Đừng đau đầu nữa, để tôi chọn giúp bạn nhé!</p>
         </header>
 
-        <!-- CATEGORY PILLS -->
-        <div class="category-filters">
-            <button class="pill active"><i class="ph-fill ph-squares-four text-primary"></i> Tất cả</button>
-            <button class="pill text-red"><i class="ph-fill ph-sun"></i> Trời nóng</button>
-            <button class="pill text-blue"><i class="ph-fill ph-snowflake"></i> Trời lạnh</button>
-            <button class="pill text-yellow"><i class="ph-fill ph-sun-horizon"></i> Ăn sáng</button>
-            <button class="pill text-orange"><i class="ph-fill ph-sun"></i> Ăn trưa</button>
-            <button class="pill text-purple"><i class="ph-fill ph-moon"></i> Ăn tối</button>
-        </div>
-
-        <!-- MAIN LAYOUT -->
-        <main class="main-grid">
-            <!-- LEFT COLUMN (2/3) -->
-            <div class="left-col">
-                <!-- FEATURED CARD -->
-                <div class="featured-card" id="featured-card">
-                    <div class="fc-content">
-                        <div class="fc-badge"><i class="ph-fill ph-sparkle text-yellow"></i> Gợi ý cho bạn hôm nay</div>
-                        <h2 class="fc-title" id="fc-title">Bún bò Huế 🍜</h2>
-                        <p class="fc-desc" id="fc-desc">Cay nồng đậm đà, chuẩn vị Huế – đánh thức vị giác tuyệt vời!</p>
-                        <div class="fc-actions">
-                            <button class="btn-primary" id="random-btn">
-                                <i class="ph-fill ph-dice-five"></i> <span>Random món khác</span>
-                                <div class="loader" id="btn-loader"></div>
-                            </button>
-                            <button class="btn-outline"><i class="ph ph-bookmark-simple"></i> Lưu món</button>
-                        </div>
-                        <div class="fc-meta" id="fc-meta">
-                            <i class="ph ph-lightbulb"></i> Gợi ý dựa trên: Trời nóng, Ăn trưa <i class="ph ph-pencil-simple"></i>
-                        </div>
-                    </div>
-                    <div class="fc-image-wrapper">
-                        <img id="fc-image" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Bún bò Huế" class="fc-image">
-                    </div>
-                </div>
-
-                <!-- RANKING SECTION -->
-                <div class="card ranking-section">
-                    <div class="card-header">
-                        <h3><i class="ph-fill ph-trophy text-yellow"></i> Ranking món ăn</h3>
-                    </div>
-                    <div class="tabs">
-                        <button class="tab active">Hôm nay</button>
-                        <button class="tab">Tuần này</button>
-                        <button class="tab">Tháng này</button>
-                        <button class="tab">Tất cả thời gian</button>
-                    </div>
-                    <div class="ranking-list">
-                        <!-- Rank Item 1 -->
-                        <div class="rank-item">
-                            <div class="rank-badge gold">1</div>
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="rank-img">
-                            <span class="rank-name">Bún bò Huế</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 100%; background: #ff5a5f;"></div>
-                            </div>
-                            <span class="rank-score text-primary">23 lượt</span>
-                        </div>
-                        <!-- Rank Item 2 -->
-                        <div class="rank-item">
-                            <div class="rank-badge silver">2</div>
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="rank-img">
-                            <span class="rank-name">Phở bò</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 78%; background: #ff5a5f;"></div>
-                            </div>
-                            <span class="rank-score">18 lượt</span>
-                        </div>
-                        <!-- Rank Item 3 -->
-                        <div class="rank-item">
-                            <div class="rank-badge bronze">3</div>
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="rank-img">
-                            <span class="rank-name">Cơm gà</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 65%; background: #ff5a5f;"></div>
-                            </div>
-                            <span class="rank-score">15 lượt</span>
-                        </div>
-                        <!-- Rank Item 4 -->
-                        <div class="rank-item">
-                            <div class="rank-badge none">4</div>
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="rank-img">
-                            <span class="rank-name">Bún chả</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 48%; background: #ff5a5f;"></div>
-                            </div>
-                            <span class="rank-score">11 lượt</span>
-                        </div>
-                        <!-- Rank Item 5 -->
-                        <div class="rank-item">
-                            <div class="rank-badge none">5</div>
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="rank-img">
-                            <span class="rank-name">Mì xào</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 39%; background: #ff5a5f;"></div>
-                            </div>
-                            <span class="rank-score">9 lượt</span>
-                        </div>
-                    </div>
-                    <div class="text-center mt-3">
-                        <button class="btn-text">Xem tất cả <i class="ph ph-caret-down"></i></button>
-                    </div>
+        <main>
+            <div id="result-container" class="result-container">
+                <!-- Card kết quả sẽ xuất hiện ở đây -->
+                <div class="empty-state">
+                    Bấm nút bên dưới để xem gợi ý hôm nay! 👇
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN (1/3) -->
-            <div class="right-col">
-                <!-- Date Picker Widget -->
-                <div class="card widget">
-                    <div class="widget-header">
-                        <h3>Chọn ngày</h3>
-                        <i class="ph ph-calendar-blank text-muted"></i>
-                    </div>
-                    <div class="date-picker-box">
-                        <input type="date" value="2026-05-08" class="date-input">
-                    </div>
-                </div>
-
-                <!-- Statistics Widget -->
-                <div class="card widget">
-                    <div class="widget-header">
-                        <h3>Thống kê</h3>
-                    </div>
-                    <div class="stats-list">
-                        <div class="stat-item">
-                            <div class="stat-icon bg-orange-light text-primary"><i class="ph-fill ph-fork-knife"></i></div>
-                            <span class="stat-label">Tổng món đã ăn</span>
-                            <span class="stat-value text-primary">42</span>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-icon bg-green-light text-green"><i class="ph-fill ph-heart"></i></div>
-                            <span class="stat-label">Món yêu thích</span>
-                            <span class="stat-value text-green">8</span>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-icon bg-blue-light text-blue"><i class="ph-fill ph-calendar-check"></i></div>
-                            <span class="stat-label">Chuỗi ngày liên tiếp</span>
-                            <span class="stat-value text-blue">7 ngày</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- History Widget -->
-                <div class="card widget">
-                    <div class="widget-header">
-                        <h3><i class="ph ph-clock text-main"></i> Lịch sử gần đây</h3>
-                    </div>
-                    <div class="history-list">
-                        <div class="history-item">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="hist-img">
-                            <div class="hist-info">
-                                <span class="hist-name">Phở bò</span>
-                            </div>
-                            <span class="hist-date">08/05/2026</span>
-                        </div>
-                        <div class="history-item">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="hist-img">
-                            <div class="hist-info">
-                                <span class="hist-name">Cơm tấm</span>
-                            </div>
-                            <span class="hist-date">07/05/2026</span>
-                        </div>
-                        <div class="history-item">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="hist-img">
-                            <div class="hist-info">
-                                <span class="hist-name">Bún bò Huế</span>
-                            </div>
-                            <span class="hist-date">06/05/2026</span>
-                        </div>
-                        <div class="history-item">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="hist-img">
-                            <div class="hist-info">
-                                <span class="hist-name">Pizza</span>
-                            </div>
-                            <span class="hist-date">05/05/2026</span>
-                        </div>
-                        <div class="history-item">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100" alt="Food" class="hist-img">
-                            <div class="hist-info">
-                                <span class="hist-name">Sushi</span>
-                            </div>
-                            <span class="hist-date">04/05/2026</span>
-                        </div>
-                    </div>
-                    <button class="btn-block-outline mt-3">Xem tất cả lịch sử <i class="ph ph-arrow-right"></i></button>
-                </div>
-            </div>
+            <button id="random-btn" class="btn-primary fade-in">
+                <span>🎲 Chọn Món Ngẫu Nhiên</span>
+                <div class="loader" id="btn-loader"></div>
+            </button>
         </main>
-        
-        <footer>
-            © 2026 Hôm Nay Ăn Gì? – Ăn ngon mỗi ngày!
-        </footer>
     </div>
 
     <script src="app.js"></script>

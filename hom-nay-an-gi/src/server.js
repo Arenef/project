@@ -17,13 +17,14 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Routes
 const foodRoutes = require('./routes/food.routes');
+const authRoutes = require('./routes/auth.routes');
 
 app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to Hom Nay An Gi API' });
 });
 
 app.use('/api/foods', foodRoutes);
-
+app.use('/api/auth', authRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
