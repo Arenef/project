@@ -49,9 +49,8 @@ const getFoodByName = async (req, res) => {
 
 const getFoodByTag = async (req, res) => {
     try {
-        // req.query.tag lấy từ URL query string (ví dụ: /api/foods/filter?tag=com)
-        const tag = req.query.tag;
-        const result = await foodService.getFoodByTag(tag);
+        const tags = req.query.tag; // Có thể là chuỗi "Cơm,Ăn vặt"
+        const result = await foodService.getFoodByTag(tags);
 
         if (!result || result.length === 0) {
             return res.status(404).json({ message: 'Không tìm thấy món ăn nào với tag này' });
@@ -126,10 +125,11 @@ const createFood = async (req, res) => {
 
 const getRandomFood = async (req, res) => {
     try {
-        const result = await foodService.getRandomFood();
+        const tags = req.query.tags;
+        const result = await foodService.getRandomFood(tags);
 
         if (!result || result.length === 0) {
-            return res.status(404).json({ message: 'Không có món ăn nào trong danh sách' });
+            return res.status(404).json({ message: 'Không có món ăn nào phù hợp' });
         }
 
         return res.status(200).json(result[0]); // Trả về 1 món ăn duy nhất

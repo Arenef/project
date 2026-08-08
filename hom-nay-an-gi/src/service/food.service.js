@@ -24,7 +24,7 @@ const getFoodById = async (id) => {
 
 const getFoodByName = async (name) => {
     try {
-        const [result] = await pool.query('SELECT * FROM foods WHERE name = ?', [name]);
+        const [result] = await pool.query('SELECT * FROM foods WHERE name LIKE ?', [`%${name}%`]);
         return result;
     }
     catch (error) {
@@ -33,9 +33,23 @@ const getFoodByName = async (name) => {
     }
 }
 
-const getFoodByTag = async (tag) => {
+const getFoodByTag = async (tags) => {
     try {
-        const [result] = await pool.query('SELECT * FROM foods WHERE tag LIKE ?', [`%${tag}%`]);
+        if (!tags) {
+            const [result] = await pool.query('SELECT * FROM foods');
+            return result;
+        }
+
+        const tagList = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (tagList.length === 0) {
+            const [result] = await pool.query('SELECT * FROM foods');
+            return result;
+        }
+
+        const conditions = tagList.map(() => 'tag LIKE ?').join(' OR ');
+        const values = tagList.map(t => `%${t}%`);
+
+        const [result] = await pool.query(`SELECT * FROM foods WHERE ${conditions}`, values);
         return result;
     }
     catch (error) {
@@ -92,7 +106,7 @@ const updateFood = async (id, name, description, tag, image_url) => {
         if (!image_url) image_url = food.image_url;
 
         const [result] = await pool.query(
-            'UPDATE foods SET name = ?, description = ?, tag = ?, image_url = ? WHERE id = ?', 
+            'UPDATE foods SET name = ?, description = ?, tag = ?, image_url = ? WHERE id = ?',
             [name, description, tag, image_url, id]
         );
 
@@ -114,10 +128,24 @@ const updateFood = async (id, name, description, tag, image_url) => {
     }
 }
 
-const getRandomFood = async () => {
+const getRandomFood = async (tags) => {
     try {
-        // Lấy ngẫu nhiên 1 dòng từ MySQL
-        const [result] = await pool.query('SELECT * FROM foods ORDER BY RAND() LIMIT 1');
+        if (!tags) {
+            const [result] = await pool.query('SELECT * FROM foods ORDER BY RAND() LIMIT 1');
+            return result;
+        }
+
+        const tagList = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (tagList.length === 0) {
+            const [result] = await pool.query('SELECT * FROM foods ORDER BY RAND() LIMIT 1');
+            return result;
+        }
+
+        const conditions = tagList.map(() => 'tag LIKE ?').join(' OR ');
+        const values = tagList.map(t => `%${t}%`);
+
+        const query = `SELECT * FROM foods WHERE ${conditions} ORDER BY RAND() LIMIT 1`;
+        const [result] = await pool.query(query, values);
         return result;
     }
     catch (error) {
