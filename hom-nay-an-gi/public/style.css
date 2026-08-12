@@ -540,3 +540,50 @@ button {
     0% { transform: scale(1); opacity: 0.8; }
     100% { transform: scale(1.2); opacity: 1; }
 }
+
+/* --- Bảng Lịch Sử --- */
+.history-table-wrapper {
+    grid-column: 1 / -1;
+    width: 100%;
+    overflow-x: auto;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.history-table th, .history-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table th {
+    background: var(--bg-light);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.history-table tbody tr {
+    transition: background 0.2s;
+}
+
+.history-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.history-table td {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.history-table td.food-name-cell {
+    font-weight: 600;
+    color: var(--primary-color);
+}

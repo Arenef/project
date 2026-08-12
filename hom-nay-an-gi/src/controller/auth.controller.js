@@ -16,7 +16,7 @@ const login = async (req, res) => {
         };
 
         // Lỗi 3: Biến JWT_SECRET chưa được khai báo. Lấy từ biến môi trường hoặc dùng chuỗi mặc định.
-        const JWT_SECRET = process.env.JWT_SECRET;
+        const JWT_SECRET = process.env.JWT_SECRET || 'HomNayAnGiSecretKey2026';
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 
         // Lỗi 4: Lệnh gửi response. Đã res.json thì thôi return user nhé.

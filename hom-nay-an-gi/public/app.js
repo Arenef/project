@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         heroSection.style.display = 'none';
         searchBarWrapper.style.display = 'flex';
+        categorySection.style.display = 'block';
 
         categoryPills.forEach(p => p.classList.remove('active'));
         categoryPills[0].classList.add('active');
@@ -43,8 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Đã đăng nhập
             userControls.innerHTML = `
                 <div class="user-info">Xin chào, <span>${username}</span></div>
+                <button class="btn-secondary" id="user-favorites-btn" style="margin-right: 10px;">⭐ Đã lưu</button>
+                <button class="btn-secondary" id="user-history-btn" style="margin-right: 10px;">📜 Lịch sử</button>
                 <button class="btn-secondary" onclick="logout()">Đăng xuất</button>
             `;
+            document.getElementById('user-history-btn').addEventListener('click', (e) => window.showHistory(e));
+            document.getElementById('user-favorites-btn').addEventListener('click', (e) => window.showFavorites(e));
         } else {
             // Khách
             userControls.innerHTML = `
@@ -254,9 +259,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) throw new Error('Không tìm thấy món phù hợp');
             const food = await res.json();
 
+            let isFavorite = false;
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const favRes = await fetch('/api/foods/fav', { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (favRes.ok) {
+                        const favData = await favRes.json();
+                        if (favData.data) {
+                            isFavorite = favData.data.some(f => f.id === food.id);
+                        }
+                    }
+                } catch(e) { console.error('Lỗi check fav:', e); }
+            }
+
             setTimeout(() => {
                 // Hiển thị món ăn
                 const imageUrl = food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+
                 randomResultCard.innerHTML = `
                     <div class="food-card" style="width: 100%;">
                         <img src="${imageUrl}" alt="${food.name}" class="food-image">
@@ -264,6 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h2 class="food-title">${food.name}</h2>
                             <p class="food-desc">${food.description || 'Chưa có mô tả chi tiết.'}</p>
                             <div class="food-tag">#${food.tag || 'Món ngon'}</div>
+                            <button class="btn-primary w-100" style="margin-top: 1rem; padding: 0.8rem; font-size: 1rem;" onclick="pickFood(${food.id})">
+                                Lụm món này 🤤
+                            </button>
+                            ${isFavorite 
+                                ? `<button class="btn-secondary w-100 btn-saved" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem; background-color: #f59e0b; color: white;" onclick="removeFood(${food.id})">⭐ Món này đã lưu</button>`
+                                : `<button class="btn-secondary w-100 btn-save" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem;" onclick="saveFood(${food.id})">⭐ Lưu món này</button>`
+                            }
                         </div>
                     </div>
                 `;
@@ -296,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         heroSection.style.display = 'block';
         searchBarWrapper.style.display = 'none';
+        categorySection.style.display = 'block';
 
         // Khôi phục giao diện random mặc định
         initialRandomWrapper.style.display = 'flex';
@@ -341,5 +369,285 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             resultContainer.appendChild(card);
         });
+    }
+
+    // --- 6. LOGIC LỊCH SỬ & LỤM MÓN ---
+    window.showHistory = async function(e) {
+        if (e) e.preventDefault();
+        
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        navHome.classList.remove('active');
+        navFoods.classList.remove('active');
+
+        heroSection.style.display = 'none';
+        searchBarWrapper.style.display = 'none';
+        categorySection.style.display = 'none'; // Ẩn bộ lọc khi xem lịch sử
+
+        resultContainer.innerHTML = '<div class="empty-state">Đang tải lịch sử...</div>';
+
+        try {
+            const res = await fetch('/api/foods/history', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi lấy lịch sử');
+            
+            if (data.data && data.data.length > 0) {
+                renderHistoryTable(data.data);
+            } else {
+                resultContainer.innerHTML = `<div class="empty-state-card" style="grid-column: 1 / -1;"><i class="ph-fill ph-ghost"></i><p>Bạn chưa lụm món nào cả! Quay Random để lụm ngay nhé 😢</p></div>`;
+            }
+        } catch (error) {
+             resultContainer.innerHTML = `<div class="empty-state">😢 ${error.message}</div>`;
+        }
+    };
+
+    function renderHistoryTable(foods) {
+        resultContainer.innerHTML = ''; 
+
+        if (!foods || foods.length === 0) {
+            resultContainer.innerHTML = `<div class="empty-state-card" style="grid-column: 1 / -1;"><i class="ph-fill ph-ghost"></i><p>Bạn chưa lụm món nào cả! Quay Random để lụm ngay nhé 😢</p></div>`;
+            return;
+        }
+
+        const tableWrapper = document.createElement('div');
+        tableWrapper.className = 'history-table-wrapper fade-in';
+        
+        let tbodyHTML = foods.map(food => {
+            const date = new Date(food.history_created_at || food.created_at);
+            const formattedDate = date.toLocaleString('vi-VN', { 
+                day: '2-digit', month: '2-digit', year: 'numeric', 
+                hour: '2-digit', minute: '2-digit' 
+            });
+            return `
+                <tr>
+                    <td class="food-name-cell">${food.name}</td>
+                    <td>${formattedDate}</td>
+                </tr>
+            `;
+        }).join('');
+
+        tableWrapper.innerHTML = `
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Tên Món Ăn</th>
+                        <th>Thời Gian Lụm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tbodyHTML}
+                </tbody>
+            </table>
+        `;
+        resultContainer.appendChild(tableWrapper);
+    }
+
+    window.pickFood = async function(foodId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('🤤 Đã chốt món này! (Bạn đang là khách nên sẽ không lưu lịch sử)');
+            return;
+        }
+        
+        try {
+            const res = await fetch(`/api/foods/${foodId}/history`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi lưu lịch sử');
+            
+            alert('🤤 Đã lụm món này thành công!');
+        } catch(err) {
+            alert('Lỗi: ' + err.message);
+        }
+    };
+
+    window.saveFood = async function(foodId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('⭐ Yêu cầu đăng nhập để lưu món ăn!');
+            openModal('login-modal');
+            return;
+        }
+        
+        try {
+            const res = await fetch(`/api/foods/${foodId}/fav`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi khi lưu món');
+            
+            alert('⭐ Đã lưu món này vào danh sách yêu thích!');
+            
+            const btn = document.querySelector(`.btn-save[onclick="saveFood(${foodId})"]`);
+            if (btn) {
+                btn.outerHTML = `<button class="btn-secondary w-100 btn-saved" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem; background-color: #f59e0b; color: white;" onclick="removeFood(${foodId})">⭐ Món này đã lưu</button>`;
+            }
+        } catch(err) {
+            alert('Lỗi: ' + err.message);
+        }
+    };
+
+    window.removeFood = async function(foodId) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        try {
+            const res = await fetch(`/api/foods/${foodId}/fav`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi khi xóa món');
+            
+            alert('Đã xóa món này khỏi danh sách yêu thích!');
+            
+            const btn = document.querySelector(`.btn-saved[onclick="removeFood(${foodId})"]`);
+            if (btn) {
+                btn.outerHTML = `<button class="btn-secondary w-100 btn-save" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem;" onclick="saveFood(${foodId})">⭐ Lưu món này</button>`;
+            }
+            
+            if (resultContainer.querySelector('.history-table')) {
+                window.showFavorites();
+            }
+        } catch(err) {
+            alert('Lỗi: ' + err.message);
+        }
+    };
+
+    window.showFavorites = async function(e) {
+        if (e) e.preventDefault();
+        
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        navHome.classList.remove('active');
+        navFoods.classList.remove('active');
+
+        heroSection.style.display = 'none';
+        searchBarWrapper.style.display = 'none';
+        categorySection.style.display = 'none';
+
+        resultContainer.innerHTML = '<div class="empty-state">Đang tải danh sách đã lưu...</div>';
+
+        try {
+            const res = await fetch('/api/foods/fav', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi lấy danh sách yêu thích');
+            
+            if (data.data && data.data.length > 0) {
+                renderFavoritesTable(data.data);
+            } else {
+                resultContainer.innerHTML = `<div class="empty-state-card" style="grid-column: 1 / -1;"><i class="ph-fill ph-star"></i><p>Bạn chưa lưu món nào cả!</p></div>`;
+            }
+        } catch (error) {
+             resultContainer.innerHTML = `<div class="empty-state">😢 ${error.message}</div>`;
+        }
+    };
+
+    function renderFavoritesTable(foods) {
+        resultContainer.innerHTML = ''; 
+
+        const tableWrapper = document.createElement('div');
+        tableWrapper.className = 'history-table-wrapper fade-in';
+        
+        let tbodyHTML = foods.map(food => {
+            const date = new Date(food.created_at); // time they saved it or it was created
+            const formattedDate = date.toLocaleString('vi-VN', { 
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+            return `
+                <tr>
+                    <td class="food-name-cell">${food.name} <span style="color:#f59e0b; margin-left: 5px; cursor: pointer;" onclick="removeFood(${food.id})" title="Xóa khỏi danh sách">❌</span></td>
+                    <td>${food.tag || ''}</td>
+                </tr>
+            `;
+        }).join('');
+
+        tableWrapper.innerHTML = `
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Tên Món Ăn</th>
+                        <th>Danh Mục</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tbodyHTML}
+                </tbody>
+            </table>
+        `;
+        resultContainer.appendChild(tableWrapper);
+    }
+
+    // --- 7. BẢNG XẾP HẠNG ---
+    window.fetchRanking = async function(type = 'day') {
+        const tabs = document.querySelectorAll('.ranking-tabs .pill');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        
+        const activeTab = document.getElementById(`rank-${type}`);
+        if (activeTab) activeTab.classList.add('active');
+
+        const container = document.getElementById('ranking-container');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="empty-state-card" style="width: 100%; text-align: center; color: var(--text-light);">Đang tải bảng xếp hạng...</div>';
+
+        try {
+            const res = await fetch(`/api/foods/frank?type=${type}`);
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || 'Lỗi lấy bảng xếp hạng');
+
+            if (!data.data || data.data.length === 0) {
+                container.innerHTML = `<div class="empty-state-card" style="width: 100%; text-align: center; color: var(--text-light);">Chưa có món ăn nào được chọn trong khoảng thời gian này.</div>`;
+                return;
+            }
+
+            container.innerHTML = data.data.map((food, index) => {
+                const imageUrl = food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                
+                return `
+                    <div class="food-card" style="min-width: 250px; flex: 0 0 auto; position: relative; scroll-snap-align: start;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: var(--primary-color); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 1rem; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                            ${medal} - ${food.total_count} lượt
+                        </div>
+                        <img src="${imageUrl}" alt="${food.name}" class="food-image" style="height: 160px; object-fit: cover;">
+                        <div class="food-content" style="padding: 1rem;">
+                            <h3 style="margin-bottom: 0.8rem; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${food.name}">${food.name}</h3>
+                            <button class="btn-primary w-100" style="padding: 0.6rem; font-size: 0.95rem; border-radius: 30px;" onclick="pickFood(${food.id})">Lụm ngay 🤤</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            container.innerHTML = `<div class="empty-state-card" style="width: 100%; text-align: center; color: var(--primary-color);">Lỗi: ${error.message}</div>`;
+        }
+    };
+
+    // Load ranking lúc khởi tạo
+    if (document.getElementById('ranking-container')) {
+        fetchRanking('day');
     }
 });

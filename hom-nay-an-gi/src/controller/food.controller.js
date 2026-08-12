@@ -104,7 +104,7 @@ const deleteFood = async (req, res) => {
 const createFood = async (req, res) => {
     try {
         const { name, description, tag, image_url } = req.body; // Dữ liệu tạo mới nằm trong body
-        
+
         if (!name) {
             return res.status(400).json({ message: 'Tên món ăn không được để trống' });
         }
@@ -140,6 +140,139 @@ const getRandomFood = async (req, res) => {
     }
 }
 
+const addFoodToHistory = async (req, res) => {
+    try {
+        // req.user.id có được từ middleware verifyToken
+        const userId = req.user.id;
+        const foodId = req.params.foodId || req.body.foodId;
+
+        if (!userId || !foodId) {
+            return res.status(400).json({ message: 'Thiếu thông tin userId hoặc foodId' });
+        }
+
+        const result = await foodService.addFoodToHistory(userId, foodId);
+        
+        // Cập nhật bảng xếp hạng
+        await foodService.updateFoodRanking(foodId);
+
+        return res.status(201).json({ message: 'Lưu lịch sử thành công', data: result });
+    }
+    catch (error) {
+        console.error('Error in addFoodToHistory Controller:', error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+const getFoodFromHistory = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await foodService.getFoodFromHistory(userId);
+
+        // Xóa phần check result.length === 0 gây lỗi 404
+        return res.status(200).json({
+            message: 'Lấy danh sách lịch sử ăn của người dùng thành công',
+            data: result
+        });
+    }
+    catch (error) {
+        console.log('Error in getFoodFromHistory Controller:', error.message);
+        return res.status(500).json({ message: 'Lỗi Server khi lấy lịch sử các món ăn' });
+    }
+}
+
+const addFoodToFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const foodId = req.params.foodId || req.body.foodId;
+
+        if (!userId) {
+            return res.status(404).json({ message: 'Thiếu thông tin người dùng' });
+        }
+
+        if (!foodId) {
+            return res.status(404).json({ message: 'Thiếu thông tin món ăn' });
+        }
+
+        const result = await foodService.addFoodToFavourites(userId, foodId);
+        return res.status(201).json({ message: 'Thêm vào yêu thích thành công', data: result });
+
+    }
+    catch (error) {
+        console.log('Error in addFoodToFavourites Controller:', error.message);
+        return res.status(500).json({ message: 'Lỗi server khi thêm món ăn yêu thích' });
+    }
+}
+
+const getFoodFromFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            return res.status(404).json({ message: 'Thiếu thông tin người dùng' });
+        }
+
+        const result = await foodService.getFoodFromFavourites(userId);
+        return res.status(200).json({
+            message: 'Lấy danh sách món ăn yêu thích thành công',
+            data: result
+        });
+    }
+    catch (error) {
+        console.log('Error in getFoodFromFavourites Controller:', error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+const removeFoodInFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const foodId = req.params.foodId || req.body.foodId;
+
+        if (!userId) {
+            return res.status(404).json({ message: 'Thiếu thông tin người dùng' });
+        }
+
+        if (!foodId) {
+            return res.status(404).json({ message: 'Thiếu thông tin món ăn' });
+        }
+
+        const result = await foodService.removeFoodInFavourites(userId, foodId);
+        return res.status(200).json({ message: 'Đã xóa khỏi danh sách yêu thích' });
+    }
+    catch (error) {
+        console.log('Error in removeFoodFromFavourites Controller:', error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+const updateFoodRanking = async (req, res) => {
+    try {
+        const foodId = req.params.foodId || req.body.foodId;
+
+        if (!foodId) {
+            return res.status(404).json({ message: 'Thiếu thông tin món ăn' });
+        }
+
+        const result = await foodService.updateFoodRanking(foodId);
+        return res.status(200).json({ message: 'Đã cập nhật thành công bảng xếp hạng' });
+    }
+    catch (error) {
+        console.log('Error in updateFoodRanking Controller:', error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+const getFoodRanking = async (req, res) => {
+    try {
+        const { type } = req.query; // Nhận 'day', 'month', hoặc 'year' từ query string
+        const result = await foodService.getFoodRanking(type);
+        return res.status(200).json({ message: `Lấy dữ liệu bảng xếp hạng theo ${type || 'day'} thành công`, data: result });
+    }
+    catch (error) {
+        console.log('Error in getFoodRanking Controller:', error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getFoodAll,
     getFoodById,
@@ -148,5 +281,12 @@ module.exports = {
     updateFood,
     deleteFood,
     createFood,
-    getRandomFood
+    getRandomFood,
+    addFoodToHistory,
+    getFoodFromHistory,
+    addFoodToFavourites,
+    getFoodFromFavourites,
+    removeFoodInFavourites,
+    updateFoodRanking,
+    getFoodRanking
 };

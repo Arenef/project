@@ -60,6 +60,22 @@
             </div>
         </header>
 
+        <!-- Khu vực Bảng xếp hạng -->
+        <section class="ranking-section" style="margin: 2rem 0; background: var(--card-bg, #fff); padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h2 style="text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">🏆 Bảng xếp hạng món ăn</h2>
+            <div class="ranking-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <button class="pill active" id="rank-day" data-rank="day" onclick="fetchRanking('day')">Ngày</button>
+                <button class="pill" id="rank-month" data-rank="month" onclick="fetchRanking('month')">Tháng</button>
+                <button class="pill" id="rank-year" data-rank="year" onclick="fetchRanking('year')">Năm</button>
+            </div>
+            
+            <!-- Danh sách món ăn top (scroll ngang) -->
+            <div id="ranking-container" style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
+                <div class="empty-state-card" style="width: 100%; text-align: center; color: var(--text-light, #888);">
+                    Đang tải bảng xếp hạng...
+                </div>
+            </div>
+        </section>
         <!-- Search Bar (ẩn mặc định, hiện khi ấn Món ăn) -->
         <div id="search-bar-wrapper" style="display: none; justify-content: center; margin-bottom: 2rem; margin-top: 1rem;">
             <div style="display: flex; gap: 10px; width: 100%; max-width: 500px;">

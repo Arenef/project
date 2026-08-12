@@ -12,17 +12,18 @@ const verifyToken = (req, res, next) => {
 
     try {
         // 3. Xác minh (Verify) token bằng chữ ký mộc đỏ (JWT_SECRET)
-        const JWT_SECRET = process.env.JWT_SECRET;
-        
+        const JWT_SECRET = process.env.JWT_SECRET || 'HomNayAnGiSecretKey2026';
+
         // Lệnh này sẽ bung payload ra (chứa id, username...) nếu chữ ký đúng và chưa hết hạn
         const decoded = jwt.verify(token, JWT_SECRET);
 
         // 4. Nhét dữ liệu người dùng vào biến req.user để các hàm phía sau có thể xài (ví dụ: biết ai đang gọi API)
         req.user = decoded;
-        
+
         // 5. Cấp phép cho đi tiếp vào Controller
         next();
     } catch (error) {
+        console.error("JWT Verify Error:", error);
         // Nếu chữ ký bị sai (do giả mạo) hoặc token đã hết hạn (quá 7 ngày)
         return res.status(403).json({ message: 'Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!' });
     }
