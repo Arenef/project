@@ -67,7 +67,11 @@ const getFoodByTag = async (req, res) => {
 const updateFood = async (req, res) => {
     try {
         const id = req.params.id; // Lấy ID từ URL (ví dụ: PUT /api/foods/1)
-        const { name, description, tag, image_url } = req.body; // Dữ liệu cần update nằm trong body
+        const { name, description, tag } = req.body; // Dữ liệu cần update nằm trong body
+
+        // Nếu người dùng upload file, lấy link từ Cloudinary (req.file.path)
+        // Nếu không có file nhưng có gửi link bằng text (req.body.image_url), dùng link đó
+        const image_url = req.file ? req.file.path : req.body.image_url;
 
         const result = await foodService.updateFood(id, name, description, tag, image_url);
 
@@ -103,7 +107,11 @@ const deleteFood = async (req, res) => {
 
 const createFood = async (req, res) => {
     try {
-        const { name, description, tag, image_url } = req.body; // Dữ liệu tạo mới nằm trong body
+        const { name, description, tag } = req.body; // Dữ liệu tạo mới nằm trong body
+
+        // Nếu người dùng upload file, lấy link từ Cloudinary (req.file.path)
+        // Nếu không có file nhưng có gửi link bằng text (req.body.image_url), dùng link đó
+        const image_url = req.file ? req.file.path : req.body.image_url;
 
         if (!name) {
             return res.status(400).json({ message: 'Tên món ăn không được để trống' });

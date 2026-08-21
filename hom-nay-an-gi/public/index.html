@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hôm Nay Ăn Gì?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,7 +13,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo" onclick="window.location.reload()">
-                <i class="ph-fill ph-fork-knife"></i> Hôm Nay Ăn Gì?
+                <i class="ph-fill ph-fork-knife" style="color:var(--primary-color)"></i> Hôm Nay Ăn Gì?
             </div>
             
             <ul class="nav-links">
@@ -21,61 +21,114 @@
                 <li><a href="#" id="nav-foods">Món ăn</a></li>
             </ul>
             <div class="user-controls" id="user-controls">
-                <!-- Nội dung sẽ được render bằng JS (Guest hoặc Logged In) -->
+                <!-- Nội dung sẽ được render bằng JS -->
             </div>
         </div>
     </nav>
 
     <div class="container fade-in">
-        <!-- Khu vực Tiêu đề & Chọn ngẫu nhiên -->
-        <header class="hero-section" id="hero-section">
-            <h1>Không biết ăn gì? 🤔</h1>
-            <p>Để tôi quyết định giúp bạn!</p>
+        <!-- Bố cục chính 2 cột -->
+        <div class="main-layout-grid" id="main-layout-grid">
             
-            <div class="random-section" id="random-section">
-                <!-- Vùng chứa toàn bộ nội dung random -->
-                <div id="random-content-area" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%;">
+            <!-- Cột Trái -->
+            <div class="left-column">
+                <header class="hero-section" id="hero-section">
+                    <h1>Không biết ăn gì? 🤔</h1>
+                    <p>Để tôi quyết định giúp bạn!</p>
                     
-                    <!-- Nút bấm to ban đầu -->
-                    <div class="random-circle-wrapper" id="initial-random-wrapper">
-                        <button id="random-btn" class="random-circle-btn">
-                            <i class="ph-fill ph-dice-five"></i>
-                            <span>Quay Random</span>
+                    <div class="random-section" id="random-section">
+                        <div id="random-content-area" class="random-content-area">
+                            <!-- Nút bấm to ban đầu -->
+                            <div class="random-circle-wrapper" id="initial-random-wrapper">
+                                <button id="random-btn" class="random-circle-btn">
+                                    <i class="ph-fill ph-dice-five"></i>
+                                    <span>Quay Random</span>
+                                </button>
+                            </div>
+                            
+                            <div class="hint-text" id="initial-hint-text">
+                                <i class="ph ph-arrow-bend-left-up arrow-icon"></i>
+                                Nhấn vào để chọn món ngẫu nhiên
+                            </div>
+
+                            <!-- Nơi chứa thẻ bài kết quả ngang (ẩn ban đầu) -->
+                            <div id="random-result-card" style="display: none; width: 100%;"></div>
+                            
+                            <!-- Nút bấm quay lại (ẩn ban đầu) -->
+                            <button id="random-btn-again" class="btn-primary btn-large btn-spin-again" style="display: none; margin-top: 1rem; padding: 1rem 3rem; border-radius: 50px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(255, 90, 95, 0.3);">
+                                <i class="ph-bold ph-arrows-clockwise"></i> <span>Quay Lại Lần Nữa</span>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Khu vực Chọn theo loại bữa ăn -->
+                <section class="category-block" id="category-section">
+                    <div class="category-header">
+                        <i class="ph-regular ph-clock"></i> Chọn theo loại bữa ăn
+                    </div>
+                    <div class="category-filters">
+                        <button class="pill active" data-tag="all">
+                            <span class="icon-wrap" style="color:var(--primary-color)"><i class="ph-fill ph-squares-four"></i></span>
+                            Tất cả
+                        </button>
+                        <button class="pill" data-tag="Sáng">
+                            <span class="icon-wrap" style="color:#f59e0b"><i class="ph-fill ph-sun"></i></span>
+                            Sáng
+                        </button>
+                        <button class="pill" data-tag="Trưa">
+                            <span class="icon-wrap" style="color:#d97706"><i class="ph-fill ph-sun-dim"></i></span>
+                            Trưa
+                        </button>
+                        <button class="pill" data-tag="Tối">
+                            <span class="icon-wrap" style="color:#6366f1"><i class="ph-fill ph-moon"></i></span>
+                            Tối
+                        </button>
+                        <button class="pill" data-tag="Ăn vặt">
+                            <span class="icon-wrap" style="color:#10b981"><i class="ph-fill ph-television"></i></span>
+                            Ăn vặt
+                        </button>
+                        <button class="pill" data-tag="Đồ uống">
+                            <span class="icon-wrap" style="color:#3b82f6"><i class="ph-fill ph-coffee"></i></span>
+                            Đồ uống
                         </button>
                     </div>
+                </section>
+            </div>
+
+            <!-- Cột Phải -->
+            <div class="right-column">
+                <!-- Khu vực Bảng xếp hạng -->
+                <section class="ranking-block">
+                    <div class="ranking-header-top">
+                        <h2 style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="ph-fill ph-trophy" style="color:#f59e0b"></i> Bảng xếp hạng món ăn
+                        </h2>
+                        <div class="ranking-tabs">
+                            <button class="pill-sm active" id="rank-day" data-rank="day" onclick="fetchRanking('day')">Ngày</button>
+                            <button class="pill-sm" id="rank-week" data-rank="week" onclick="fetchRanking('week')">Tuần</button>
+                            <button class="pill-sm" id="rank-month" data-rank="month" onclick="fetchRanking('month')">Tháng</button>
+                            <button class="pill-sm" id="rank-year" data-rank="year" onclick="fetchRanking('year')">Năm</button>
+                        </div>
+                    </div>
                     
-                    <div class="hint-text" id="initial-hint-text">
-                        <i class="ph ph-arrow-bend-left-up arrow-icon"></i>
-                        Nhấn vào để chọn món ngẫu nhiên
+                    <!-- Danh sách món ăn top (dọc) -->
+                    <div id="ranking-container" class="ranking-list">
+                        <div class="empty-state-card" style="width: 100%; text-align: center; color: var(--text-light, #888);">
+                            Đang tải bảng xếp hạng...
+                        </div>
                     </div>
 
-                    <!-- Nơi chứa thẻ bài kết quả (ẩn ban đầu) -->
-                    <div id="random-result-card" style="display: none; width: 100%; max-width: 320px;"></div>
-                    
-                    <!-- Nút bấm quay lại (ẩn ban đầu) -->
-                    <button id="random-btn-again" class="btn-primary btn-large" style="display: none; padding: 1rem 3rem; border-radius: 50px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(255, 90, 95, 0.3);">
-                        <i class="ph-bold ph-dice-five"></i> <span>Quay Lại Lần Nữa</span>
-                    </button>
-                </div>
-            </div>
-        </header>
+                    <div class="view-all-ranking">
+                        <button class="btn-link">Xem tất cả bảng xếp hạng <i class="ph-bold ph-arrow-right"></i></button>
+                    </div>
+                </section>
 
-        <!-- Khu vực Bảng xếp hạng -->
-        <section class="ranking-section" style="margin: 2rem 0; background: var(--card-bg, #fff); padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <h2 style="text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">🏆 Bảng xếp hạng món ăn</h2>
-            <div class="ranking-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
-                <button class="pill active" id="rank-day" data-rank="day" onclick="fetchRanking('day')">Ngày</button>
-                <button class="pill" id="rank-month" data-rank="month" onclick="fetchRanking('month')">Tháng</button>
-                <button class="pill" id="rank-year" data-rank="year" onclick="fetchRanking('year')">Năm</button>
+                <!-- Banner Thêm món ăn - ĐÃ XÓA -->
             </div>
             
-            <!-- Danh sách món ăn top (scroll ngang) -->
-            <div id="ranking-container" style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
-                <div class="empty-state-card" style="width: 100%; text-align: center; color: var(--text-light, #888);">
-                    Đang tải bảng xếp hạng...
-                </div>
-            </div>
-        </section>
+        </div> <!-- End Grid 2 cột -->
+
         <!-- Search Bar (ẩn mặc định, hiện khi ấn Món ăn) -->
         <div id="search-bar-wrapper" style="display: none; justify-content: center; margin-bottom: 2rem; margin-top: 1rem;">
             <div style="display: flex; gap: 10px; width: 100%; max-width: 500px;">
@@ -84,40 +137,10 @@
             </div>
         </div>
 
-        <!-- Khu vực Phân loại -->
-        <section class="search-section" id="category-section">
-            <div class="category-filters">
-                <button class="pill active" data-tag="all">
-                    <span class="icon-wrap"><i class="ph-fill ph-squares-four"></i></span>
-                    Tất cả
-                </button>
-                <button class="pill" data-tag="Cơm">
-                    <span class="icon-wrap blue">🍚</span>
-                    Cơm
-                </button>
-                <button class="pill" data-tag="Bún/Phở">
-                    <span class="icon-wrap green">🍜</span>
-                    Bún/Phở
-                </button>
-                <button class="pill" data-tag="Ăn vặt">
-                    <span class="icon-wrap yellow">🍟</span>
-                    Ăn vặt
-                </button>
-                <button class="pill" data-tag="Đồ uống">
-                    <span class="icon-wrap purple">🥤</span>
-                    Đồ uống
-                </button>
-            </div>
-        </section>
-
-        <!-- Khu vực Hiện kết quả (Dạng Lưới) -->
+        <!-- Khu vực Hiện kết quả Grid (dành cho tab Món ăn) -->
         <main>
             <div id="result-container" class="food-grid">
                 <!-- Kết quả món ăn sẽ xuất hiện ở đây -->
-                <div class="empty-state-card" id="initial-empty-state">
-                    <i class="ph-fill ph-sparkle"></i>
-                    <p>Nhấn <span class="highlight">"Quay Random"</span> để xem món ăn gợi ý nhé!</p>
-                </div>
             </div>
         </main>
     </div>

@@ -24,9 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navFoods.classList.add('active');
         navHome.classList.remove('active');
 
-        heroSection.style.display = 'none';
+        document.getElementById('main-layout-grid').style.display = 'none';
         searchBarWrapper.style.display = 'flex';
-        categorySection.style.display = 'block';
 
         categoryPills.forEach(p => p.classList.remove('active'));
         categoryPills[0].classList.add('active');
@@ -278,19 +277,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imageUrl = food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
 
                 randomResultCard.innerHTML = `
-                    <div class="food-card" style="width: 100%;">
+                    <div class="random-card-horizontal fade-in">
                         <img src="${imageUrl}" alt="${food.name}" class="food-image">
                         <div class="food-content">
-                            <h2 class="food-title">${food.name}</h2>
-                            <p class="food-desc">${food.description || 'Chưa có mô tả chi tiết.'}</p>
-                            <div class="food-tag">#${food.tag || 'Món ngon'}</div>
-                            <button class="btn-primary w-100" style="margin-top: 1rem; padding: 0.8rem; font-size: 1rem;" onclick="pickFood(${food.id})">
-                                Lụm món này 🤤
-                            </button>
-                            ${isFavorite 
-                                ? `<button class="btn-secondary w-100 btn-saved" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem; background-color: #f59e0b; color: white;" onclick="removeFood(${food.id})">⭐ Món này đã lưu</button>`
-                                : `<button class="btn-secondary w-100 btn-save" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem;" onclick="saveFood(${food.id})">⭐ Lưu món này</button>`
-                            }
+                            <h2 class="food-title" style="font-size: 1.5rem; margin-bottom: 0.25rem">${food.name}</h2>
+                            <p class="food-desc" style="margin-bottom: 1rem; color: var(--text-muted)">${food.description || 'Món ăn cực ngon đang chờ bạn thưởng thức.'}</p>
+                            <div style="display:flex; gap: 0.5rem; margin-bottom: 1.5rem">
+                                <span class="food-tag">#${food.tag || 'Món ngon'}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button class="btn-primary" style="padding: 0.8rem; font-size: 1rem;" onclick="pickFood(${food.id})">
+                                    <i class="ph-bold ph-arrows-left-right"></i> Lụm món này 🤤
+                                </button>
+                                ${isFavorite 
+                                    ? `<button class="btn-secondary btn-saved" style="padding: 0.8rem; font-size: 1rem; background-color: #fef08a; border-color: #facc15; color: #a16207;" onclick="removeFood(${food.id})"><i class="ph-fill ph-star"></i> Món này đã lưu</button>`
+                                    : `<button class="btn-secondary btn-save" style="padding: 0.8rem; font-size: 1rem;" onclick="saveFood(${food.id})"><i class="ph-fill ph-star" style="color:#f59e0b"></i> Lưu món này</button>`
+                                }
+                            </div>
                         </div>
                     </div>
                 `;
@@ -321,9 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navHome.classList.add('active');
         navFoods.classList.remove('active');
 
-        heroSection.style.display = 'block';
+        document.getElementById('main-layout-grid').style.display = '';
         searchBarWrapper.style.display = 'none';
-        categorySection.style.display = 'block';
 
         // Khôi phục giao diện random mặc định
         initialRandomWrapper.style.display = 'flex';
@@ -336,16 +338,11 @@ document.addEventListener('DOMContentLoaded', () => {
         categoryPills.forEach(p => p.classList.remove('active'));
         categoryPills[0].classList.add('active');
 
-        resultContainer.innerHTML = `
-            <div class="empty-state-card" id="initial-empty-state">
-                <i class="ph-fill ph-sparkle"></i>
-                <p>Nhấn <span class="highlight">"Quay Random"</span> để xem món ăn gợi ý nhé!</p>
-            </div>
-        `;
+        resultContainer.innerHTML = '';
     });
 
     // --- 5. RENDER GIAO DIỆN MÓN ĂN ---
-    function renderFoods(foods) {
+    async function renderFoods(foods) {
         resultContainer.innerHTML = ''; // Xóa kết quả cũ
 
         if (!foods || foods.length === 0) {
@@ -353,14 +350,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Lấy danh sách món đã lưu để hiển thị đúng trạng thái icon
+        let savedIds = [];
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const res = await fetch('/api/foods/fav', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.data) {
+                    savedIds = data.data.map(f => f.id);
+                }
+            } catch(e) { /* ignore */ }
+        }
+
         foods.forEach(food => {
             const card = document.createElement('div');
             card.className = 'food-card';
 
             const imageUrl = food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+            const isSaved = savedIds.includes(food.id);
 
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${food.name}" class="food-image">
+                <div class="food-card-img-wrapper">
+                    <img src="${imageUrl}" alt="${food.name}" class="food-image">
+                    <button class="bookmark-btn ${isSaved ? 'bookmarked' : ''}" 
+                            data-food-id="${food.id}" 
+                            title="${isSaved ? 'Bỏ lưu' : 'Lưu món này'}"
+                            onclick="toggleBookmark(this, ${food.id})">
+                        <i class="${isSaved ? 'ph-fill' : 'ph'} ph-bookmark-simple"></i>
+                    </button>
+                </div>
                 <div class="food-content">
                     <h2 class="food-title">${food.name}</h2>
                     <p class="food-desc">${food.description || 'Chưa có mô tả chi tiết.'}</p>
@@ -381,9 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navHome.classList.remove('active');
         navFoods.classList.remove('active');
 
-        heroSection.style.display = 'none';
+        document.getElementById('main-layout-grid').style.display = 'none';
         searchBarWrapper.style.display = 'none';
-        categorySection.style.display = 'none'; // Ẩn bộ lọc khi xem lịch sử
 
         resultContainer.innerHTML = '<div class="empty-state">Đang tải lịch sử...</div>';
 
@@ -532,6 +552,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- TOGGLE BOOKMARK trên Food Card ---
+    window.toggleBookmark = async function(btn, foodId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Bạn cần đăng nhập để lưu món ăn!');
+            openModal('login-modal');
+            return;
+        }
+
+        const isBookmarked = btn.classList.contains('bookmarked');
+        const icon = btn.querySelector('i');
+
+        try {
+            if (isBookmarked) {
+                // Bỏ lưu
+                const res = await fetch(`/api/foods/${foodId}/fav`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message);
+
+                btn.classList.remove('bookmarked');
+                icon.className = 'ph ph-bookmark-simple';
+                btn.title = 'Lưu món này';
+            } else {
+                // Lưu
+                const res = await fetch(`/api/foods/${foodId}/fav`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message);
+
+                btn.classList.add('bookmarked');
+                icon.className = 'ph-fill ph-bookmark-simple';
+                btn.title = 'Bỏ lưu';
+
+                // Hiệu ứng pop nhẹ
+                btn.style.transform = 'scale(1.3)';
+                setTimeout(() => btn.style.transform = '', 200);
+            }
+        } catch(err) {
+            alert('Lỗi: ' + err.message);
+        }
+    };
+
     window.showFavorites = async function(e) {
         if (e) e.preventDefault();
         
@@ -541,9 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navHome.classList.remove('active');
         navFoods.classList.remove('active');
 
-        heroSection.style.display = 'none';
+        document.getElementById('main-layout-grid').style.display = 'none';
         searchBarWrapper.style.display = 'none';
-        categorySection.style.display = 'none';
 
         resultContainer.innerHTML = '<div class="empty-state">Đang tải danh sách đã lưu...</div>';
 
@@ -602,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 7. BẢNG XẾP HẠNG ---
     window.fetchRanking = async function(type = 'day') {
-        const tabs = document.querySelectorAll('.ranking-tabs .pill');
+        const tabs = document.querySelectorAll('.ranking-tabs .pill-sm');
         tabs.forEach(tab => tab.classList.remove('active'));
         
         const activeTab = document.getElementById(`rank-${type}`);
@@ -624,19 +693,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            container.innerHTML = data.data.map((food, index) => {
+            const maxCount = data.data[0].total_count || 1;
+            const top3 = data.data.slice(0, 3);
+            
+            container.innerHTML = top3.map((food, index) => {
                 const imageUrl = food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                const medal = (index + 1);
+                const percent = Math.min(100, Math.round((food.total_count / maxCount) * 100));
                 
                 return `
-                    <div class="food-card" style="min-width: 250px; flex: 0 0 auto; position: relative; scroll-snap-align: start;">
-                        <div style="position: absolute; top: 10px; left: 10px; background: var(--primary-color); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 1rem; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-                            ${medal} - ${food.total_count} lượt
-                        </div>
-                        <img src="${imageUrl}" alt="${food.name}" class="food-image" style="height: 160px; object-fit: cover;">
-                        <div class="food-content" style="padding: 1rem;">
-                            <h3 style="margin-bottom: 0.8rem; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${food.name}">${food.name}</h3>
-                            <button class="btn-primary w-100" style="padding: 0.6rem; font-size: 0.95rem; border-radius: 30px;" onclick="pickFood(${food.id})">Lụm ngay 🤤</button>
+                    <div class="ranking-item">
+                        <div class="ranking-medal">${medal}</div>
+                        <img src="${imageUrl}" class="ranking-item-img" alt="${food.name}">
+                        <div class="ranking-item-info">
+                            <div class="ranking-item-name">${food.name}</div>
+                            <div class="ranking-item-count"><i class="ph-fill ph-fork-knife" style="color:var(--text-muted)"></i> ${food.total_count} lần</div>
+                            <div class="ranking-item-bar-bg">
+                                <div class="ranking-item-bar" style="width: ${percent}%"></div>
+                            </div>
                         </div>
                     </div>
                 `;

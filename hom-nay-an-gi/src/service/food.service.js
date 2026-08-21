@@ -232,11 +232,16 @@ const getFoodRanking = async (type = 'day') => {
         // Dựa vào type để lọc theo ngày, tháng, năm hiện tại
         if (type === 'day') {
             condition = 'WHERE r.ranking_date = CURDATE()';
-        } else if (type === 'month') {
+        }
+        else if (type === 'week') {
+            condition = 'WHERE WEEK(r.ranking_date) = WEEK(CURDATE())'
+        }
+        else if (type === 'month') {
             condition = 'WHERE MONTH(r.ranking_date) = MONTH(CURDATE()) AND YEAR(r.ranking_date) = YEAR(CURDATE())';
         } else if (type === 'year') {
             condition = 'WHERE YEAR(r.ranking_date) = YEAR(CURDATE())';
-        } else {
+        }
+        else {
             // Mặc định lấy theo ngày nếu type không hợp lệ
             condition = 'WHERE r.ranking_date = CURDATE()';
         }
